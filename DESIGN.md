@@ -15,3 +15,6 @@ Native buttons, visible focus, labeled fields, meter values, live outcome/error 
 
 ## States
 No country: founding charter. No history/policy: actionable empty text. Invalid import/corrupt storage/quota failure: visible inline error. Enactment: outcome with exact model deltas. No network dependency for play; external font is optional.
+
+## Archive edition
+Keep the briefing desk layout. Show source issue number, archive link and eligibility evidence before choosing. Label recorded outcomes explicitly; do not imply original debate prose. Optional observation tables retain ranges/means/sample counts. Conditional policy changes must be readable in outcomes. Broad versus verified-only eligibility is an explicit setting.

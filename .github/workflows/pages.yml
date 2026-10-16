@@ -1,10 +1,10 @@
-name: Verify and deploy Pages
+name: Import, verify and deploy archive
 on:
   push:
     branches: [main]
   workflow_dispatch:
 permissions:
-  contents: read
+  contents: write
   pages: write
   id-token: write
 concurrency:
@@ -13,6 +13,7 @@ concurrency:
 jobs:
   deploy:
     runs-on: ubuntu-latest
+    timeout-minutes: 90
     environment:
       name: github-pages
       url: ${{ steps.deployment.outputs.page_url }}
@@ -21,12 +22,32 @@ jobs:
       - uses: actions/setup-node@v4
         with:
           node-version: 24
+      - uses: actions/cache@v4
+        with:
+          path: data/raw
+          key: mwq-archive-v1-${{ github.run_id }}
+          restore-keys: mwq-archive-v1-
+      - name: Fetch actual issue archive (resumable, rate limited)
+        run: python3 scripts/fetch-archive.py
+      - name: Parse source records
+        run: python3 scripts/import-archive.py
+      - name: Test source parser
+        run: python3 tests/parser_test.py
       - run: npm test
       - run: npm run verify
+        env:
+          REQUIRE_COMPLETE_ARCHIVE: '1'
+      - name: Commit sourced snapshot
+        run: |
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git add src/catalogue.js src/data
+          if ! git diff --cached --quiet; then
+            git commit -m "Import complete MWQ issue effects and policy snapshot"
+            git push
+          fi
       - run: npm run build
       - uses: actions/configure-pages@v5
-        with:
-          enablement: true
       - uses: actions/upload-pages-artifact@v3
         with:
           path: dist

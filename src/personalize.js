@@ -1,0 +1,5 @@
+export function personalize(text,n){
+ const demonym=n.demonym||n.name,initials=s=>s.split(/\s+/).map(w=>w[0]).join('');
+ const values={NAME:n.name,TYPE:'Republic',TYPEINITIALS:'R',CAPITAL:n.capital||'the capital',LEADER:n.leader||'the head of government',LEADERPLURAL:'government leaders',CURRENCY:n.currency,CURRENCYPLURAL:n.currency+'s',ANIMAL:n.animal,ANIMALPLURAL:n.animal+'s',DEMONYM:demonym,DEMONYMADJECTIVE:demonym,DEMONYMADJECTIVEINITIALS:initials(demonym),DEMONYMNOUN:demonym+' citizen',DEMONYMNOUNPLURAL:demonym+' citizens',DEMONYUMNOUNPLURAL:demonym+' citizens',NAMEINITIALS:initials(n.name),POPULATION:(n.population/1e6).toFixed(2)+' million',POPULATION_VALUE:String(n.population),RANDOMLASTNAME:'Marlow',REGION:n.region||'the surrounding region',SLOGAN:n.motto,MAJORINDUSTRY:'manufacturing',FAITH:'the national faith',EGG:'egg',A:'a','LEADER/NAME':n.leader||n.name};
+ return String(text).replace(/@{1,2}([A-Za-z_ /-]+)@@/g,(_,key)=>values[key]??(key.includes('/')?key.split('/')[0]:key.toLowerCase().replaceAll('_',' ')));
+}

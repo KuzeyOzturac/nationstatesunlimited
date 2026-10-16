@@ -1,29 +1,26 @@
-# Implementation plan and status
+# Archive implementation status
 
-## Requested goal
-Create a country and play unlimited NationStates issues with country-appropriate eligibility/effects; publish to KuzeyOzturac/nationstatesunlimited.
+## User requirement
+Use the actual issues at http://www.mwq.dds.nl/ns/results/, with https://nationsofns.fandom.com/wiki/Policies as the policy reference. Original scenarios are not acceptable substitutes.
 
-## Delivered foundation
-- Static, dependency-free application suitable for GitHub Pages.
-- Founding outlook, name, motto, currency, animal, flag accent.
-- 36 original scenarios with three policy responses each.
-- Infinite replay with no timers; twelve-decision repeat exclusion; alternate policy responses after enactment.
-- Nine bounded indicators; deterministic state-sensitive effects; visible effect preview and outcome reports.
-- Policy ledger, searchable recent history, browser save, validated JSON import/export.
-- Pure engine, automated verification, test-gated Pages workflow, maintenance context.
+## Source retrieval
+HTTP works; HTTPS requests through the development environment failed. Use the exact HTTP base in scripts/fetch-archive.py. It fetches the index, combined outcome list, policies page and every indexed detailed issue page. Downloads are cached and rate limited; failures are retried and reported. GitHub Actions performs the durable full import, so an interrupted chat does not cancel it.
 
-## Fidelity gate: incomplete
-This is a playable approximation, not an exact clone. The supplied archive repeatedly returned 502/timeouts on 2026-10-16. No archive texts or data were imported. Official formulas and complete validity logic are not public. The official technical discussion confirms the observed-effect archive cannot establish precise effects: https://forum.nationstates.net/viewtopic.php?f=15&t=556705
+## What the archive contains
+1,871 indexed issue records at the first retrieval, numbered outcomes, measured statistic min/mean/max/sample counts, confirmation dates, and policy transitions. The archive does not publish the full original opening stories or speaker arguments. The app therefore offers an explicitly labeled outcome mode using actual recorded outcomes. It does not write fictional substitutes.
 
-Never present original local rules as actual game rules. Unlimited means unlimited turns through recurring scenarios, not infinitely many unique authored stories.
+## Implementation
+- 85 actual policy definitions; 2,897 option-to-policy relations from the archive's policy page.
+- Preserve original option numbers, duplicate-number result variants and source URLs.
+- Detailed observations retained in lazy-loaded chunks; nine mapped local indicators use observed means directly, clamped to local 0–100 bounds.
+- Definite policy changes applied. Conditional observations are disclosed but not automatically applied, since their triggers are unknown.
+- Documented eligibility rules are separate in src/eligibility.js. Other issues explicitly have unknown eligibility. Broad sandbox includes them; verified-only mode restricts the pool.
+- Version 1 prototype saves migrate, preserving a legacy backup but clearing fictional policies/history.
+- Import fixtures verify real issue #0 and #65, numeric mean parsing, sample counts, and definite/conditional policy distinctions.
+- Workflow gates publication on complete detailed-page coverage, parser tests, model tests, source integrity and build.
 
-## Next work required for the full requested catalogue
-1. Obtain a retrievable archive snapshot. Record URL, fetch time, checksum and source attribution. Check reuse terms before redistributing full text.
-2. Build a fixture-driven parser against the actual HTML, not guessed markup. Preserve option IDs, observed effect ranges/means/sample sizes separately from authored text and validity.
-3. Store unknown eligibility as unknown; do not silently treat it as verified. Curate documented requirements with source references.
-4. Add policy prerequisite/exclusion tests per imported issue. Keep observed deltas distinct from inferred simulation coefficients.
-5. Extend national indicators and classification before presenting effects on scales unsupported by the local model.
-6. Browser-test onboarding, mobile, keyboard, save round-trip and 50-turn play on deployed Pages. No browser automation was available during this build.
+## Remaining fidelity limits
+Most validity conditions and official numerical formulas are not public in this source. Observed means do not reproduce those formulas. Only two issue prerequisites have currently been curated. Full debate prose is absent. The requested Fandom policy page is blocked to retrieval in this environment; its role was established through the available search excerpt, while actual policy definitions and mappings come from MWQ's policies page. Do not claim complete official-game rule parity.
 
 ## Deployment
-Push main triggers .github/workflows/pages.yml. Pages must allow GitHub Actions as source. The workflow asks configure-pages to enable it; repository permission limitations may require owner configuration. Confirm the deployed URL and workflow result before claiming live deployment.
+.github/workflows/pages.yml imports the full archive, validates it, commits the generated snapshot, and deploys Pages. Cached downloads survive reruns. The existing live version stays unchanged if import or verification fails. Inspect the workflow result before claiming publication.
