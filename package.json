@@ -1,0 +1,1 @@
+{"name":"nationstates-unlimited","version":"1.0.0","private":true,"type":"module","scripts":{"test":"node --test","verify":"node scripts/verify.mjs","build":"node scripts/build.mjs","dev":"python3 -m http.server 5173"},"engines":{"node":">=22"}}

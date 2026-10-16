@@ -1,0 +1,4 @@
+import {readFile} from 'node:fs/promises';import {issues} from '../src/catalogue.js';
+const files=['index.html','style.css','src/app.js','src/engine.js','src/catalogue.js','.github/workflows/pages.yml','AGENTS.md','DESIGN.md','docs/PLAN.md'];for(const file of files){const text=await readFile(file,'utf8');if(!text.trim())throw Error(`Empty file: ${file}`);}
+for(const issue of issues){if(issue.provenance!=='original')throw Error('Missing provenance');if(issue.requires&&!Object.keys(issue.requires).every(k=>issues.some(i=>i.topic===k)))throw Error('Invalid dependency');}
+const html=await readFile('index.html','utf8');for(const path of [...html.matchAll(/(?:src|href)="\.\/([^\"]+)"/g)].map(m=>m[1]))await readFile(path);console.log(`Verified ${files.length} required files, entrypoint assets, and ${issues.length} scenario provenance/dependencies.`);
