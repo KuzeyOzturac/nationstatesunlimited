@@ -38,6 +38,9 @@ def parse_effects(source):
    count=clean(data[k].text()) if k<len(data) else ''
    if m:records.append({'stat':m[3],'min':float(m[1]),'max':float(m[2]),'mean':float(m[4]),'samples':int(count) if count.isdigit() else None})
    else:
+    fixed=re.fullmatch(r'([+-]?[\d.]+) ([A-Za-z].*)',text)
+    if fixed:
+     value=float(fixed[1]);records.append({'stat':fixed[2],'min':value,'max':value,'mean':value,'samples':int(count) if count.isdigit() else None,'fixed':True});continue
     p=re.match(r'(sometimes )?(adds|removes) policy:\s*(.*)',text)
     if p:transitions.append({'policy':p[3],'action':'add' if p[2]=='adds' else 'remove','conditional':bool(p[1])})
     else:notes.append(text)
